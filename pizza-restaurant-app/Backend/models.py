@@ -1,9 +1,13 @@
-# models.py
-
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import CheckConstraint
 
 db = SQLAlchemy()
+
+class Task(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=False)
+    due_date = db.Column(db.String(50))
+    completed = db.Column(db.Boolean, default=False)
+
 
 class Restaurant(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -24,7 +28,3 @@ class RestaurantPizza(db.Model):
     pizza_id = db.Column(db.Integer, db.ForeignKey('pizza.id'), nullable=False)
     restaurant = db.relationship('Restaurant', back_populates='restaurant_pizzas')
     pizza = db.relationship('Pizza', back_populates='pizza_restaurants')
-
-    __table_args__ = (
-        CheckConstraint('price >= 1.0 AND price <= 30.0', name='check_price'),
-    )
