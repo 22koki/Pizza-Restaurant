@@ -3,10 +3,13 @@ from flask_restful import Api, Resource, reqparse
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import joinedload
 from models import db, Restaurant, Pizza, RestaurantPizza
+from flask_migrate import Migrate
 
 app = Flask(__name__)
+migrate = Migrate(app, db)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pizza_restaurants.db'
 db.init_app(app)
+
 api = Api(app)
 
 # ... Your existing models and routes ...
