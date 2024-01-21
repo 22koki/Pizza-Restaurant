@@ -1,0 +1,55 @@
+/* src/App.css */
+
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #fce8d5; /* Creamy background color */
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1 {
+  color: #e44d26; /* Tomato red for headings */
+}
+
+h2 {
+  color: #ffa07a; /* Light coral for subheadings */
+}
+
+ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+li {
+  margin-bottom: 10px;
+}
+
+label {
+  margin-right: 10px;
+  color: #e44d26; /* Tomato red for labels */
+}
+
+input {
+  margin-bottom: 10px;
+  padding: 8px;
+  border: 1px solid #e44d26; /* Tomato red border for input */
+}
+
+button {
+  background-color: #ff8c00; /* Dark orange for buttons */
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #e44d26; /* Lighter tomato red on hover */
+}
