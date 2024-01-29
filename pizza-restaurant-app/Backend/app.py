@@ -31,6 +31,22 @@ class RestaurantsResource(Resource):
         else:
             restaurants = Restaurant.query.all()
             return jsonify([{'id': r.id, 'name': r.name, 'address': r.address} for r in restaurants])
+    # Handling delete request
+    def delete(self, restaurant_id):
+        # Handle DELETE requests for /restaurants/:id
+        restaurant = Restaurant.query.get(restaurant_id)
+
+        if restaurant:
+            # Delete associated RestaurantPizzas first
+            RestaurantPizza.query.filter_by(restaurant_id=restaurant_id).delete()
+
+            # Now delete the Restaurant
+            db.session.delete(restaurant)
+            db.session.commit()
+
+            return '', 204  # Empty response with status code 204 (No Content)
+        else:
+            return {"error": "Restaurant not found"}, 404
 
 class PizzasResource(Resource):
     def get(self, pizza_id=None):
@@ -45,6 +61,24 @@ class PizzasResource(Resource):
             return jsonify([{'id': p.id, 'name': p.name, 'ingredients': p.ingredients} for p in pizzas])
 
 class RestaurantPizzasResource(Resource):
+    def get(self):
+        # Handle GET requests for /restaurant_pizzas
+        restaurant_pizzas = RestaurantPizza.query.all()
+        return jsonify([{
+            'id': rp.id,
+            'price': rp.price,
+            'pizza': {
+                'id': rp.pizza.id,
+                'name': rp.pizza.name,
+                'ingredients': rp.pizza.ingredients
+            },
+            'restaurant': {
+                'id': rp.restaurant.id,
+                'name': rp.restaurant.name,
+                'address': rp.restaurant.address
+            }
+        } for rp in restaurant_pizzas])
+
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('price', type=float, required=True, help='Price is required')
@@ -56,22 +90,34 @@ class RestaurantPizzasResource(Resource):
         restaurant = Restaurant.query.get(args['restaurant_id'])
 
         if not pizza or not restaurant:
-            return {'errors': ['validation errors']}, 400
+            return {'errors': ['Validation errors']}, 400
 
         new_restaurant_pizza = RestaurantPizza(price=args['price'], pizza_id=pizza.id, restaurant_id=restaurant.id)
         db.session.add(new_restaurant_pizza)
         db.session.commit()
 
+        # Return information about the newly created association
         return jsonify({
-            'id': pizza.id,
-            'name': pizza.name,
-            'ingredients': pizza.ingredients
+            'id': new_restaurant_pizza.id,
+            'price': new_restaurant_pizza.price,
+            'pizza': {
+                'id': pizza.id,
+                'name': pizza.name,
+                'ingredients': pizza.ingredients
+            },
+            'restaurant': {
+                'id': restaurant.id,
+                'name': restaurant.name,
+                'address': restaurant.address
+            }
         })
+
 
 # Add the resources to the API
 api.add_resource(RestaurantsResource, '/restaurants', '/restaurants/<int:restaurant_id>')
 api.add_resource(PizzasResource, '/pizzas', '/pizzas/<int:pizza_id>')
 api.add_resource(RestaurantPizzasResource, '/restaurant_pizzas')
+api.add_resource(RestaurantsResource, '/restaurants/<int:restaurant_id>')
 
 
 # Your other routes...
