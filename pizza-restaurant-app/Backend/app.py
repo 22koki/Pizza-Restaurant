@@ -1,11 +1,14 @@
-from flask import Flask, request, jsonify
+from flask import Flask, jsonify
 from flask_restful import Api, Resource, reqparse
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import joinedload
 from models import db, Restaurant, Pizza, RestaurantPizza
 from flask_migrate import Migrate
+from flask_cors import CORS
+#from resources import RestaurantsResource, PizzasResource, RestaurantPizzasResource
 
 app = Flask(__name__)
+CORS(app)
 migrate = Migrate(app, db)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///pizza_restaurants.db'
 db.init_app(app)
@@ -108,7 +111,7 @@ class RestaurantPizzasResource(Resource):
             'restaurant': {
                 'id': restaurant.id,
                 'name': restaurant.name,
-                'address': restaurant.address
+                'address': restaurant.addresspyth
             }
         })
 
@@ -117,7 +120,7 @@ class RestaurantPizzasResource(Resource):
 api.add_resource(RestaurantsResource, '/restaurants', '/restaurants/<int:restaurant_id>')
 api.add_resource(PizzasResource, '/pizzas', '/pizzas/<int:pizza_id>')
 api.add_resource(RestaurantPizzasResource, '/restaurant_pizzas')
-api.add_resource(RestaurantsResource, '/restaurants/<int:restaurant_id>')
+#api.add_resource(RestaurantsResource, '/restaurants/<int:restaurant_id>')
 
 
 # Your other routes...

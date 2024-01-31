@@ -2,62 +2,74 @@
 
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import'./App.css'
+import './App.css';
 
 const App = () => {
   const [restaurants, setRestaurants] = useState([]);
   const [pizzas, setPizzas] = useState([]);
   const [newPizzaData, setNewPizzaData] = useState({
     price: 0,
-    pizza_id: 1, // Default pizza_id, you may want to change this based on your data
-    restaurant_id: 1, // Default restaurant_id, you may want to change this based on your data
+    pizza_id: 1,
+    restaurant_id: 1,
   });
+  const [selectedRestaurant, setSelectedRestaurant] = useState(null);
 
   useEffect(() => {
-    // Fetch all restaurants
-    axios.get('/restaurants')
+    axios.get('http://localhost:5000/restaurants')
       .then(response => setRestaurants(response.data))
       .catch(error => console.error('Error fetching restaurants:', error));
 
-    // Fetch all pizzas
-    axios.get('/pizzas')
+    axios.get('http://localhost:5000/pizzas')
       .then(response => setPizzas(response.data))
       .catch(error => console.error('Error fetching pizzas:', error));
   }, []);
 
   const handleDeleteRestaurant = (restaurantId) => {
-    // Delete a restaurant
-    axios.delete(`/restaurants/${restaurantId}`)
+    axios.delete(`http://localhost:5000/restaurants/${restaurantId}`)
       .then(() => {
-        // Remove the deleted restaurant from the state
         setRestaurants(restaurants.filter(r => r.id !== restaurantId));
       })
       .catch(error => console.error('Error deleting restaurant:', error));
   };
 
   const handleCreateRestaurantPizza = () => {
-    // Create a new RestaurantPizza
-    axios.post('/restaurant_pizzas', newPizzaData)
+    axios.post('http://localhost:5000/restaurant_pizzas', newPizzaData)
       .then(response => {
-        // Update the state with the newly created pizza
         setPizzas([...pizzas, response.data]);
       })
       .catch(error => console.error('Error creating restaurant pizza:', error));
   };
 
+  const handleViewRestaurantData = (restaurantId) => {
+    setSelectedRestaurant(restaurantId);
+  };
+
   return (
-    <div>
+    <div className="container">
       <h1>Pizza Restaurant App</h1>
 
       <h2>Restaurants</h2>
       <ul>
         {restaurants.map(restaurant => (
           <li key={restaurant.id}>
-            {restaurant.name} - {restaurant.address}
+            <span>
+              {restaurant.name} - {restaurant.address}
+            </span>
             <button onClick={() => handleDeleteRestaurant(restaurant.id)}>Delete</button>
+            <button onClick={() => handleViewRestaurantData(restaurant.id)}>View Data</button>
           </li>
         ))}
       </ul>
+
+      {selectedRestaurant && (
+        <div>
+          <h2>Restaurant Data</h2>
+          <p>Name: {restaurants.find(r => r.id === selectedRestaurant)?.name}</p>
+          <p>Address: {restaurants.find(r => r.id === selectedRestaurant)?.address}</p>
+          {/* Add more information as needed */}
+          <button onClick={() => setSelectedRestaurant(null)}>Back to Restaurants</button>
+        </div>
+      )}
 
       <h2>Pizzas</h2>
       <ul>
@@ -90,6 +102,6 @@ const App = () => {
       <button onClick={handleCreateRestaurantPizza}>Create</button>
     </div>
   );
-}
+};
 
 export default App;

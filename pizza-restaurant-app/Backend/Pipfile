@@ -7,8 +7,9 @@ name = "pypi"
 flask-migrate = "*"
 flask-restful = "*"
 requests = "*"
+flask-cors = "*"
 
 [dev-packages]
 
 [requires]
-python_version = "3.12"
+python_version = "i"
